@@ -26,6 +26,14 @@ abstract class HymnDatabase : RoomDatabase() {
                     HymnDatabase::class.java,
                     "hymn.db"
                 ).createFromAsset("mhb.db")
+                    .addCallback(
+                        object : RoomDatabase.Callback() {
+                            override fun onCreate(db: SupportSQLiteDatabase) {
+                                super.onCreate(db)
+                                db.execSQL("INSERT INTO hymns_fts(hymns_fts) VALUES ('rebuild')")
+                            }
+                        }
+                    )
                     .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance
