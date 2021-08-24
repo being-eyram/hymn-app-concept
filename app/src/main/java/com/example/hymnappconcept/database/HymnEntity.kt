@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull
 data class HymnEntity(
     @PrimaryKey
     @ColumnInfo(name = "_id")
-    val id: Int,
+    val id: Int?,
     @ColumnInfo(name = "title")
     val title: String,
     @ColumnInfo(name = "author")
@@ -26,11 +26,13 @@ data class HymnEntity(
 @Entity(tableName = "hymns_fts")
 @Fts4(contentEntity = HymnEntity::class)
 data class HymnFts(
-    @PrimaryKey
-    @ColumnInfo(name = "rowid")
-    val id: Int,
+
     @ColumnInfo(name = "title")
     val title: String,
+
+    @ColumnInfo(name = "author")
+    val author: String,
+
     @ColumnInfo(name = "lyrics")
     val lyrics: String
 )

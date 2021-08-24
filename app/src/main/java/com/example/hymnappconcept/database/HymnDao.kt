@@ -12,9 +12,9 @@ interface HymnDao {
     suspend fun getHymn(id: Int) : HymnEntity
 
     @Query(
-        """SELECT * 
+        """SELECT hymns_table._id, hymns_table.title, hymns_table.author, hymns_table.lyrics 
                  FROM hymns_table
-                 JOIN hymns_fts ON hymns_table._id = hymns_fts.rowid
+                 JOIN hymns_fts ON hymns_fts.rowid = hymns_table._id  
                  WHERE hymns_fts MATCH :query"""
     )
     suspend fun search(query: String): List<HymnEntity>

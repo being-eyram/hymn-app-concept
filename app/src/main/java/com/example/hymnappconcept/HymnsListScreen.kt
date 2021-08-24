@@ -83,11 +83,13 @@ fun HymnsListScreen(repository: HymnRepository, navController: NavController) {
                 ) {
                     item { Label(label = "Hymns") }
                     items(hymns!!) { hymn ->
-                        HymnCard(
-                            hymnNum = hymn.id,
-                            hymnLyrics = hymn.lyrics,
-                            onClick = { navController.navigate("ContentScreen/${hymn.id}") }
-                        )
+                        hymn.id?.let { it1 ->
+                            HymnCard(
+                                hymnNum = it1,
+                                hymnLyrics = hymn.lyrics,
+                                onClick = { navController.navigate("ContentScreen/${hymn.id}") }
+                            )
+                        }
                     }
                     if (listState.isScrollInProgress) {
                         focusRequester.requestFocus()

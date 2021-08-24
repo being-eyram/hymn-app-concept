@@ -25,7 +25,7 @@ abstract class HymnDatabase : RoomDatabase() {
                     context.applicationContext,
                     HymnDatabase::class.java,
                     "hymn.db"
-                ).createFromAsset("mhb.db")
+                ).createFromAsset("sqlite.db")
                     .addCallback(
                         object : RoomDatabase.Callback() {
                             override fun onCreate(db: SupportSQLiteDatabase) {
