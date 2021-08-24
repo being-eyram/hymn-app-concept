@@ -16,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.*
@@ -43,6 +44,7 @@ import java.util.*
 import kotlin.math.roundToInt
 
 
+@ExperimentalComposeUiApi
 @Composable
 fun HymnsListScreen(repository: HymnRepository, navController: NavController) {
     val viewModel: HymnViewModel = viewModel(factory = HymnViewModelFactory(repository))
@@ -83,9 +85,8 @@ fun HymnsListScreen(repository: HymnRepository, navController: NavController) {
                 ) {
                     item { Label(label = "Hymns") }
                     items(hymns!!) { hymn ->
-                        hymn.id?.let { it1 ->
                             HymnCard(
-                                hymnNum = it1,
+                                hymnNum = hymn.id!!,
                                 hymnLyrics = hymn.lyrics,
                                 onClick = { navController.navigate("ContentScreen/${hymn.id}") }
                             )
@@ -101,7 +102,7 @@ fun HymnsListScreen(repository: HymnRepository, navController: NavController) {
 
     }
 
-}
+
 
 @Composable
 fun HymnCard(hymnNum: Int, hymnLyrics: String, onClick: () -> Unit) {
@@ -127,6 +128,7 @@ fun HymnCard(hymnNum: Int, hymnLyrics: String, onClick: () -> Unit) {
     }
 }
 
+@ExperimentalComposeUiApi
 @Composable
 fun AppBar(appBarHeight: Dp, appBarOffsetHeightPx: MutableState<Float>, viewModel: HymnViewModel) {
     TopAppBar(

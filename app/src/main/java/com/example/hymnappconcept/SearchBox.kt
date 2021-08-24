@@ -14,12 +14,14 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Placeable
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -29,10 +31,12 @@ import com.example.hymnappconcept.repository.HymnRepository
 import com.example.hymnappconcept.viewmodels.HymnViewModel
 import kotlinx.coroutines.launch
 
+@ExperimentalComposeUiApi
 @Composable
 fun SearchBox(modifier: Modifier, placeholder: String, viewModel: HymnViewModel) {
     var search by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
+    val keyboardController = LocalSoftwareKeyboardController.current
     SearchFieldLayout(
         modifier = modifier,
         search = search,
@@ -41,11 +45,10 @@ fun SearchBox(modifier: Modifier, placeholder: String, viewModel: HymnViewModel)
             search = it
             coroutineScope.launch {
                 viewModel.search(it)
-                Log.i("Search", "Called ")
             }
         },
         onClearClick = { search = emptyString },
-        keyboardActions = KeyboardActions(onSearch = { }),
+        keyboardActions = KeyboardActions(onSearch = {keyboardController?.hide()}),
     )
 }
 

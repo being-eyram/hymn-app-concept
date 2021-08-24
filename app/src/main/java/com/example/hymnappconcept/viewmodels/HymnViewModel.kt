@@ -1,5 +1,6 @@
 package com.example.hymnappconcept.viewmodels
 
+import android.text.Editable
 import android.util.Log
 import androidx.lifecycle.*
 import com.example.hymnappconcept.database.HymnEntity
@@ -15,22 +16,31 @@ class HymnViewModel(private val repository: HymnRepository) : ViewModel() {
         get() = _result
 
     init {
-         viewModelScope.launch {
+        viewModelScope.launch {
             val result = repository.allHymns()
             _result.value = result
         }
     }
 
-    fun search (query : String) {
+    fun search(query: String) {
         viewModelScope.launch {
-            val result = repository.search("*$query*")
-            withContext(Dispatchers.Main){
+            val result = if (query.isBlank()) {
+                repository.allHymns()
+            } else repository.search(sanitizeSearchQuery(query))
+
+            withContext(Dispatchers.Main) {
                 _result.value = result
-                Log.i("Search", "${_result.value}")
             }
         }
     }
+}
 
+private fun sanitizeSearchQuery(query: String?): String {
+    if (query == null) {
+        return "";
+    }
+    val queryWithEscapedQuotes = query.replace(Regex.fromLiteral("\""), "\"\"")
+    return "*\"$queryWithEscapedQuotes\"*"
 }
 
 class HymnViewModelFactory(private val repository: HymnRepository) : ViewModelProvider.Factory {
