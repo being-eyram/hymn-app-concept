@@ -44,11 +44,14 @@ fun SearchBox(modifier: Modifier, placeholder: String, viewModel: HymnViewModel)
         onSearchTermChange = {
             search = it
             coroutineScope.launch {
-                viewModel.search(it)
+                val searchIsRegex = it.matches("""\d+""".toRegex())
+                if (searchIsRegex) {
+                    viewModel.search(it.toInt())
+                } else viewModel.search(it)
             }
         },
         onClearClick = { search = emptyString },
-        keyboardActions = KeyboardActions(onSearch = {keyboardController?.hide()}),
+        keyboardActions = KeyboardActions(onSearch = { keyboardController?.hide() }),
     )
 }
 

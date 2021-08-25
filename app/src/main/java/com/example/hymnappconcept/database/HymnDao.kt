@@ -9,13 +9,24 @@ interface HymnDao {
     suspend fun getAllHymns(): List<HymnEntity>
 
     @Query("SELECT * FROM hymns_table WHERE :id = _id ")
-    suspend fun getHymn(id: Int) : HymnEntity
+    suspend fun getHymn(id: Int): HymnEntity
 
     @Query(
-        """SELECT hymns_table._id, hymns_table.title, hymns_table.author, hymns_table.lyrics 
+        """SELECT *
                  FROM hymns_table
                  JOIN hymns_fts ON hymns_fts.rowid = hymns_table._id  
                  WHERE hymns_fts MATCH :query"""
     )
     suspend fun search(query: String): List<HymnEntity>
+
+    /**
+     * Search Hymns by their numbers
+     */
+
+    @Query(
+        """
+        SELECT * FROM hymns_table WHERE _id LIKE '%' || :query || '%'
+    """
+    )
+    suspend fun search(query: Int) : List<HymnEntity>
 }

@@ -33,6 +33,15 @@ class HymnViewModel(private val repository: HymnRepository) : ViewModel() {
             }
         }
     }
+
+    fun search(query : Int ) {
+        viewModelScope.launch {
+            val result = repository.search(query)
+            withContext(Dispatchers.Main) {
+                _result.value = result
+            }
+        }
+    }
 }
 
 private fun sanitizeSearchQuery(query: String?): String {
