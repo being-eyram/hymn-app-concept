@@ -1,7 +1,6 @@
 package com.example.hymnappconcept
 
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
@@ -79,9 +78,13 @@ fun HymnsListScreen(repository: HymnRepository, navController: NavController) {
                     state = listState,
                     contentPadding = PaddingValues(top = appBarHeight, start = 24.dp, end = 24.dp)
                 ) {
+                    /**
+                     * Check if the search query is empty if it is display all hymns.
+                     * If it's not then display the search results.
+                     */
                     if(searchTerm.isEmpty()) {
                         if(hymns != null ) {
-                            item { Label(label = "Hymns") }
+                            item { ListLabel(label = "Hymns") }
                             items(hymns!!) { hymn ->
                                 HymnCard(
                                     hymnNum = hymn.id,
@@ -95,7 +98,7 @@ fun HymnsListScreen(repository: HymnRepository, navController: NavController) {
 
                     } else {
                         if (searchResult != null ){
-                            item { Label(label = "Search Results") }
+                            item { ListLabel(label = "Search Results") }
                             items(searchResult!!) { searchedHymn ->
                                 HymnCard(
                                     hymnNum = searchedHymn.id,
@@ -108,9 +111,6 @@ fun HymnsListScreen(repository: HymnRepository, navController: NavController) {
                         }
                     }
 
-
-                Log.i("ListScreen", "Search is: $searchTerm")
-                    Log.i("ListScreen", "Search Result size is : ${searchResult?.size}")
                 if (listState.isScrollInProgress) {
                     focusRequester.requestFocus()
                 }
@@ -246,7 +246,7 @@ fun BottomBar() {
 }
 
 @Composable
-fun Label(label: String) {
+fun ListLabel(label: String) {
     Text(
         modifier = Modifier.paddingFromBaseline(40.dp),
         text = label.uppercase(Locale.US),
