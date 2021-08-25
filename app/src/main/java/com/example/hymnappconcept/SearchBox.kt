@@ -33,24 +33,20 @@ import kotlinx.coroutines.launch
 
 @ExperimentalComposeUiApi
 @Composable
-fun SearchBox(modifier: Modifier, placeholder: String, viewModel: HymnViewModel) {
-    var search by remember { mutableStateOf("") }
-    val coroutineScope = rememberCoroutineScope()
+fun SearchBox(
+    modifier: Modifier,
+    placeholder: String,
+    search : String ,
+    onSearchTermChange: (String) -> Unit,
+    onClearClick: () -> Unit
+) {
     val keyboardController = LocalSoftwareKeyboardController.current
     SearchFieldLayout(
         modifier = modifier,
         search = search,
         placeholder = { Text(placeholder, fontSize = 14.sp) },
-        onSearchTermChange = {
-            search = it
-            coroutineScope.launch {
-                val searchIsRegex = it.matches("""\d+""".toRegex())
-                if (searchIsRegex) {
-                    viewModel.search(it.toInt())
-                } else viewModel.search(it)
-            }
-        },
-        onClearClick = { search = emptyString },
+        onSearchTermChange = onSearchTermChange,
+        onClearClick = onClearClick,
         keyboardActions = KeyboardActions(onSearch = { keyboardController?.hide() }),
     )
 }

@@ -7,39 +7,31 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.List
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.*
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import com.example.hymnappconcept.repository.HymnRepository
 import com.example.hymnappconcept.viewmodels.HymnViewModel
 import com.example.hymnappconcept.viewmodels.HymnViewModelFactory
+import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -54,6 +46,8 @@ fun HymnsListScreen(repository: HymnRepository, navController: NavController) {
     val appBarHeight = 120.dp
     val appBarHeightPx = with(LocalDensity.current) { appBarHeight.roundToPx().toFloat() }
     val appBarOffsetHeightPx = remember { mutableStateOf(0f) }
+    var searchTerm by remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
 
     val nestedScrollConnection = remember {
         object : NestedScrollConnection {
@@ -68,7 +62,7 @@ fun HymnsListScreen(repository: HymnRepository, navController: NavController) {
     }
 
     Scaffold(
-        bottomBar = { BottomBar() },
+        //bottomBar = {BottomBar()}
     ) {
         Box(
             modifier = Modifier
@@ -85,23 +79,40 @@ fun HymnsListScreen(repository: HymnRepository, navController: NavController) {
                 ) {
                     item { Label(label = "Hymns") }
                     items(hymns!!) { hymn ->
-                            HymnCard(
-                                hymnNum = hymn.id,
-                                hymnLyrics = hymn.lyrics,
-                                onClick = { navController.navigate("ContentScreen/${hymn.id}") }
-                            )
-                        }
-                    }
-                    if (listState.isScrollInProgress) {
-                        focusRequester.requestFocus()
+                        HymnCard(
+                            hymnNum = hymn.id,
+                            hymnLyrics = hymn.lyrics,
+                            onClick = { navController.navigate("ContentScreen/${hymn.id}") }
+                        )
                     }
                 }
+                if (listState.isScrollInProgress) {
+                    focusRequester.requestFocus()
+                }
             }
-            AppBar(appBarHeight = appBarHeight, appBarOffsetHeightPx, viewModel)
         }
-
+        AppBar(
+            appBarHeight = appBarHeight,
+            appBarOffsetHeightPx,
+            search = searchTerm,
+            onSearchTermChange = {
+                searchTerm = it
+                coroutineScope.launch {
+                    val searchIsRegex = it.matches("""\d+""".toRegex())
+                    if (searchIsRegex) {
+                        viewModel.search(it.toInt())
+                    } else viewModel.search(it)
+                }
+            },
+            onClearClick = {
+                searchTerm = emptyString
+                coroutineScope.launch {
+                    viewModel.search(searchTerm)
+                }
+            }
+        )
     }
-
+}
 
 
 @Composable
@@ -130,7 +141,13 @@ fun HymnCard(hymnNum: Int, hymnLyrics: String, onClick: () -> Unit) {
 
 @ExperimentalComposeUiApi
 @Composable
-fun AppBar(appBarHeight: Dp, appBarOffsetHeightPx: MutableState<Float>, viewModel: HymnViewModel) {
+fun AppBar(
+    appBarHeight: Dp,
+    appBarOffsetHeightPx: MutableState<Float>,
+    search: String,
+    onSearchTermChange: (String) -> Unit,
+    onClearClick: () -> Unit
+) {
     TopAppBar(
         modifier = Modifier
             .fillMaxWidth()
@@ -168,7 +185,9 @@ fun AppBar(appBarHeight: Dp, appBarOffsetHeightPx: MutableState<Float>, viewMode
                     .padding(top = 30.dp, bottom = 10.dp)
                     .height(40.dp),
                 "Search In Hymns",
-                viewModel = viewModel
+                search = search,
+                onSearchTermChange = onSearchTermChange,
+                onClearClick = onClearClick
             )
         }
     }
