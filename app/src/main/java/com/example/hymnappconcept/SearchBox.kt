@@ -51,7 +51,6 @@ fun SearchBox(
     )
 }
 
-
 @Composable
 fun SearchFieldLayout(
     modifier: Modifier,
@@ -79,9 +78,7 @@ fun SearchFieldLayout(
                     IconBox(id = R.drawable.ic_search, contentDescription = "Search Icon")
                     Box(propagateMinConstraints = true) { innerTextField() }
 
-                    if (placeholder != null) {
-                        placeholder()
-                    }
+                    if (placeholder != null) { placeholder() }
 
                     IconBox(
                         modifier = Modifier

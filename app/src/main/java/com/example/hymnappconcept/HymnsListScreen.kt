@@ -1,6 +1,7 @@
 package com.example.hymnappconcept
 
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
@@ -41,6 +42,7 @@ import kotlin.math.roundToInt
 fun HymnsListScreen(repository: HymnRepository, navController: NavController) {
     val viewModel: HymnViewModel = viewModel(factory = HymnViewModelFactory(repository))
     val hymns by viewModel.result.observeAsState()
+    val searchResult by viewModel.searchResult.observeAsState()
     val listState = rememberLazyListState()
     val focusRequester = remember { FocusRequester() }
     val appBarHeight = 120.dp
@@ -69,7 +71,7 @@ fun HymnsListScreen(repository: HymnRepository, navController: NavController) {
                 .fillMaxSize()
                 .nestedScroll(nestedScrollConnection)
         ) {
-            if (hymns != null) {
+
                 LazyColumn(
                     modifier = Modifier
                         .focusRequester(focusRequester)
@@ -77,20 +79,44 @@ fun HymnsListScreen(repository: HymnRepository, navController: NavController) {
                     state = listState,
                     contentPadding = PaddingValues(top = appBarHeight, start = 24.dp, end = 24.dp)
                 ) {
-                    item { Label(label = "Hymns") }
-                    items(hymns!!) { hymn ->
-                        HymnCard(
-                            hymnNum = hymn.id,
-                            hymnLyrics = hymn.lyrics,
-                            onClick = { navController.navigate("ContentScreen/${hymn.id}") }
-                        )
+                    if(searchTerm.isEmpty()) {
+                        if(hymns != null ) {
+                            item { Label(label = "Hymns") }
+                            items(hymns!!) { hymn ->
+                                HymnCard(
+                                    hymnNum = hymn.id,
+                                    hymnLyrics = hymn.lyrics,
+                                    onClick = {
+                                        navController.navigate("ContentScreen/${hymn.id}")
+                                    }
+                                )
+                            }
+                        }
+
+                    } else {
+                        if (searchResult != null ){
+                            item { Label(label = "Search Results") }
+                            items(searchResult!!) { searchedHymn ->
+                                HymnCard(
+                                    hymnNum = searchedHymn.id,
+                                    hymnLyrics = searchedHymn.lyrics,
+                                    onClick = {
+                                        navController.navigate("ContentScreen/${searchedHymn.id}")
+                                    }
+                                )
+                            }
+                        }
                     }
-                }
+
+
+                Log.i("ListScreen", "Search is: $searchTerm")
+                    Log.i("ListScreen", "Search Result size is : ${searchResult?.size}")
                 if (listState.isScrollInProgress) {
                     focusRequester.requestFocus()
                 }
             }
         }
+
         AppBar(
             appBarHeight = appBarHeight,
             appBarOffsetHeightPx,
@@ -99,6 +125,10 @@ fun HymnsListScreen(repository: HymnRepository, navController: NavController) {
                 searchTerm = it
                 coroutineScope.launch {
                     val searchIsRegex = it.matches("""\d+""".toRegex())
+                    /**
+                     * If search is matches the regex it means query is a hymn number
+                     * Use the alternative search instead.
+                     */
                     if (searchIsRegex) {
                         viewModel.search(it.toInt())
                     } else viewModel.search(it)
@@ -113,7 +143,6 @@ fun HymnsListScreen(repository: HymnRepository, navController: NavController) {
         )
     }
 }
-
 
 @Composable
 fun HymnCard(hymnNum: Int, hymnLyrics: String, onClick: () -> Unit) {

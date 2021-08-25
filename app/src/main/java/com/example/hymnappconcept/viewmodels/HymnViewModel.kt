@@ -14,6 +14,10 @@ class HymnViewModel(private val repository: HymnRepository) : ViewModel() {
     private var _result = MutableLiveData<List<HymnEntity>>()
     val result: LiveData<List<HymnEntity>>
         get() = _result
+    private var _searchResult = MutableLiveData<List<HymnEntity>>()
+    val searchResult: LiveData<List<HymnEntity>>
+        get() = _searchResult
+
 
     init {
         viewModelScope.launch {
@@ -24,12 +28,10 @@ class HymnViewModel(private val repository: HymnRepository) : ViewModel() {
 
     fun search(query: String) {
         viewModelScope.launch {
-            val result = if (query.isBlank()) {
-                repository.allHymns()
-            } else repository.search(sanitizeSearchQuery(query))
+            val result = repository.search(sanitizeSearchQuery(query))
 
             withContext(Dispatchers.Main) {
-                _result.value = result
+                _searchResult.value = result
             }
         }
     }
@@ -38,7 +40,7 @@ class HymnViewModel(private val repository: HymnRepository) : ViewModel() {
         viewModelScope.launch {
             val result = repository.search(query)
             withContext(Dispatchers.Main) {
-                _result.value = result
+                _searchResult.value = result
             }
         }
     }
