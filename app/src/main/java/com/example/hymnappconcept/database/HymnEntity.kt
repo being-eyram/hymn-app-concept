@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull
 data class HymnEntity(
     @PrimaryKey
     @ColumnInfo(name = "_id")
-    val id: Int?,
+    val id: Int,
     @ColumnInfo(name = "title")
     val title: String,
     @ColumnInfo(name = "author")

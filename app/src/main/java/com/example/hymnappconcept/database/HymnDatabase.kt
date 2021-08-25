@@ -10,7 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.util.concurrent.Executor
 
-@Database(entities = [HymnEntity::class, HymnFts::class], version = 3, exportSchema = false)
+@Database(entities = [HymnEntity::class, HymnFts::class], version = 1, exportSchema = false)
 abstract class HymnDatabase : RoomDatabase() {
     abstract fun hymnDao(): HymnDao
 
@@ -25,7 +25,7 @@ abstract class HymnDatabase : RoomDatabase() {
                     context.applicationContext,
                     HymnDatabase::class.java,
                     "hymn.db"
-                ).createFromAsset("sqlite.db")
+                ).createFromAsset("mhb.db")
                     .addCallback(
                         object : RoomDatabase.Callback() {
                             override fun onCreate(db: SupportSQLiteDatabase) {

@@ -86,7 +86,7 @@ fun HymnsListScreen(repository: HymnRepository, navController: NavController) {
                     item { Label(label = "Hymns") }
                     items(hymns!!) { hymn ->
                             HymnCard(
-                                hymnNum = hymn.id!!,
+                                hymnNum = hymn.id,
                                 hymnLyrics = hymn.lyrics,
                                 onClick = { navController.navigate("ContentScreen/${hymn.id}") }
                             )
