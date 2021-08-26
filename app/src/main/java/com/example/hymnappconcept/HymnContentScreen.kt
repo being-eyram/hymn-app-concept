@@ -1,5 +1,6 @@
 package com.example.hymnappconcept
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -42,6 +43,7 @@ fun HymnContentScreen(
     var lyricsFontSize by remember { mutableStateOf(16.sp) }
     var isTextSizeActionClicked: Boolean by remember { mutableStateOf(false) }
     val interactionSource = remember { MutableInteractionSource() }
+    val scrollState = rememberScrollState()
 
     Box(modifier = Modifier
         .fillMaxSize()
@@ -62,9 +64,14 @@ fun HymnContentScreen(
                     hymnTitle = it.title,
                     hymnLyrics = it.lyrics,
                     titleFontSize = bodyTitleFontSize,
-                    bodyFontSize = lyricsFontSize
+                    bodyFontSize = lyricsFontSize,
+                    scrollState = scrollState
                 )
             }
+        }
+
+        if (scrollState.isScrollInProgress && isTextSizeActionClicked) {
+            isTextSizeActionClicked = false
         }
 
         if (isTextSizeActionClicked) {
@@ -131,9 +138,9 @@ fun HymnContent(
     hymnTitle: String,
     hymnLyrics: String,
     titleFontSize: TextUnit,
-    bodyFontSize: TextUnit
+    bodyFontSize: TextUnit,
+    scrollState: ScrollState
 ) {
-    val scrollState = rememberScrollState()
     Column(
         Modifier
             .fillMaxSize()
