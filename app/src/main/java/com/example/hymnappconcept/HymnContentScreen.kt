@@ -1,6 +1,7 @@
 package com.example.hymnappconcept
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,8 +41,15 @@ fun HymnContentScreen(
     var bodyTitleFontSize by remember { mutableStateOf(20.sp) }
     var lyricsFontSize by remember { mutableStateOf(16.sp) }
     var isTextSizeActionClicked: Boolean by remember { mutableStateOf(false) }
+    val interactionSource = remember { MutableInteractionSource() }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .clickable(indication = null, interactionSource = interactionSource) {
+            if (isTextSizeActionClicked) {
+                isTextSizeActionClicked = false
+            }
+        }) {
 
         Column(modifier = Modifier.fillMaxSize()) {
             ContentAppBar(
@@ -71,7 +79,6 @@ fun HymnContentScreen(
                     lyricsFontSize = (maxLyricsFontSize * sliderPosition) / 100f
                 }
             )
-
         }
     }
 }
