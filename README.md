@@ -20,5 +20,5 @@ And also [Justice Amoh](http://justiceamoh.github.io/) whose database was used i
 development of this project.
 
 ## Licence
-This project operates under the [CC0 1.0 Universal (CC0 1.0)](https://creativecommons.org/publicdomain/zero/1.0/) licence.
+This project is [CC0 1.0 Universal (CC0 1.0)](https://creativecommons.org/publicdomain/zero/1.0/) licenced.
 
